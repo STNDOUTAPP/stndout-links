@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appID": "REPLACE_TEAMID.com.stndout.athlete",
+        "appID": "945FHF3HXZ.com.stndout.athlete",
         "paths": ["/post/*", "/athlete/*"]
       }
     ]
