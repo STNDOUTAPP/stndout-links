@@ -1,0 +1,6 @@
+// Liens vers les stores — à remplir quand l'app sera publiée.
+// Tant qu'ils sont vides, le bouton "Obtenir l'app" pointe vers le site d'accueil.
+export const APP_STORE_URL = ''; // ex: https://apps.apple.com/app/stndout/id...
+export const PLAY_STORE_URL = ''; // ex: https://play.google.com/store/apps/details?id=...
+export const SITE_URL = 'https://stndout-links.vercel.app';
+export const SLOGAN = 'Play. Post. Get Discovered.';
