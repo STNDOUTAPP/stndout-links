@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getPublicAthlete, fullName } from '../../../lib/db';
+import { getPublicAthlete, fullName, TITLE_LABELS } from '../../../lib/db';
 import { SLOGAN } from '../../../lib/config';
 import AppCTA from '../../components/AppCTA';
 
@@ -50,6 +50,7 @@ export default async function AthletePage({ params }: Props) {
 
   const name = fullName(a);
   const tags = [a.sport, a.position, a.level, a.country].filter(Boolean) as string[];
+  const titles = (a.featured_titles || []).map((id) => TITLE_LABELS[id]).filter(Boolean) as string[];
 
   return (
     <main className="wrap">
@@ -71,6 +72,16 @@ export default async function AthletePage({ params }: Props) {
           <div className="tags">
             {tags.map((tg, i) => (
               <span className="tag" key={i}>{tg.toUpperCase()}</span>
+            ))}
+          </div>
+        ) : null}
+
+        {a.grad_year ? <p className="grad">CLASS OF {a.grad_year}</p> : null}
+
+        {titles.length > 0 ? (
+          <div className="titles">
+            {titles.map((tl, i) => (
+              <span className="title-chip" key={i}>{tl}</span>
             ))}
           </div>
         ) : null}

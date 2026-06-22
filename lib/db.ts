@@ -18,6 +18,19 @@ export type Athlete = {
   bio: string | null;
   is_private: boolean | null;
   deletion_scheduled_at: string | null;
+  grad_year: number | null;
+  featured_titles: string[] | null;
+};
+
+// Libellés des titres (EN — le web public est anglais). Suit lib/achievements.ts de l'app.
+export const TITLE_LABELS: { [id: string]: string } = {
+  recruiters_fav: "RECRUITERS' FAVORITE", grinder: 'GRINDER', active: 'ACTIVE USER',
+  complete: 'COMPLETE PROFILE', athletes_fav: "ATHLETES' FAVORITE", rising: 'RISING TALENT',
+  fans_fav: "FANS' FAVORITE", team_player: 'TEAM PLAYER', available: 'AVAILABLE',
+  group_admin: 'GROUP ADMIN', explorer: 'EXPLORER', loyal: 'LOYAL',
+  endorse_friendly: 'SUPER FRIENDLY', endorse_teammate: 'GREAT TEAMMATE',
+  endorse_play_with: 'FUN TO PLAY WITH', endorse_motivator: 'MOTIVATOR',
+  endorse_disciplined: 'DISCIPLINED', endorse_group_loved: 'GROUP FAVORITE',
 };
 
 export type Post = {
@@ -50,7 +63,7 @@ async function rest<T>(path: string): Promise<T[]> {
 // Renvoie l'athlète SEULEMENT s'il est public et non supprimé.
 export async function getPublicAthlete(id: string): Promise<Athlete | null> {
   const cols =
-    'id,first_name,last_name,username,sport,position,level,country,profile_photo,bio,is_private,deletion_scheduled_at';
+    'id,first_name,last_name,username,sport,position,level,country,profile_photo,bio,is_private,deletion_scheduled_at,grad_year,featured_titles';
   const rows = await rest<Athlete>(`athletes?id=eq.${encodeURIComponent(id)}&select=${cols}`);
   const a = rows[0];
   if (!a) return null;
