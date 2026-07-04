@@ -80,6 +80,12 @@ export async function getPost(id: string): Promise<Post | null> {
   if (!p) return null;
   if (p.status && p.status !== 'active') return null;
   if (p.expires_at && new Date(p.expires_at) < new Date()) return null; // post 24h expiré
+  // Ne JAMAIS exposer sur le web un post dont l'athlète n'est pas PUBLIC.
+  // Le tier 'recruiters' est lisible via l'API (privacy douce, gating in-app) mais
+  // ne doit pas apparaître sur une page web publique → on exige un athlète public.
+  if (!p.athlete_id) return null;
+  const owner = await getPublicAthlete(p.athlete_id);
+  if (!owner) return null;
   return p;
 }
 

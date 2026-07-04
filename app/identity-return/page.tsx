@@ -18,12 +18,12 @@ export default function IdentityReturn() {
         <div className="brand">STNDOUT</div>
         <div className="brand-line" />
         <p className="bio" style={{ marginTop: 24, fontSize: 18, color: '#C9A84C' }}>
-          ✓ Identité vérifiée
+          ✓ Identity verified
         </p>
         <p className="bio" style={{ marginTop: 8 }}>
-          Tu peux retourner à l&apos;application pour finaliser ta demande.
+          You can return to the app to finish your request.
         </p>
-        <a href="stndout://identity-return" className="cta">Retourner à STNDOUT</a>
+        <a href="stndout://identity-return" className="cta">Return to STNDOUT</a>
         <p className="slogan">
           PLAY. <span className="gold">POST.</span> GET DISCOVERED.
         </p>
