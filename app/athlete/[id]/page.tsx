@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getPublicAthlete, fullName, TITLE_LABELS } from '../../../lib/db';
+import { getPublicAthlete, fullName, TITLE_LABELS, imgProxy, imgAbs } from '../../../lib/db';
 import { SLOGAN } from '../../../lib/config';
 import AppCTA from '../../components/AppCTA';
 
@@ -17,14 +17,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description: desc,
-      images: a.profile_photo ? [a.profile_photo] : [],
+      images: a.profile_photo ? [imgAbs(a.profile_photo)] : [],
       type: 'profile',
     },
     twitter: {
       card: a.profile_photo ? 'summary_large_image' : 'summary',
       title,
       description: desc,
-      images: a.profile_photo ? [a.profile_photo] : [],
+      images: a.profile_photo ? [imgAbs(a.profile_photo)] : [],
     },
   };
 }
@@ -60,7 +60,7 @@ export default async function AthletePage({ params }: Props) {
 
         {a.profile_photo ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="avatar" src={a.profile_photo} alt={name} />
+          <img className="avatar" src={imgProxy(a.profile_photo)} alt={name} />
         ) : (
           <div className="avatar-fallback">{(a.first_name || 'A').charAt(0).toUpperCase()}</div>
         )}

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getPost, getPublicAthlete, fullName } from '../../../lib/db';
+import { getPost, getPublicAthlete, fullName, imgProxy, imgAbs } from '../../../lib/db';
 import AppCTA from '../../components/AppCTA';
 
 type Props = { params: { id: string } };
@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const who = a ? fullName(a) : 'An athlete';
   const title = `${who} on STNDOUT`;
   const desc = p.caption || [p.sport, p.level].filter(Boolean).join(' · ') || 'Play. Post. Get Discovered.';
-  const image = p.thumbnail_url || (p.photo_urls && p.photo_urls[0]) || a?.profile_photo || '';
+  const image = imgAbs(p.thumbnail_url || (p.photo_urls && p.photo_urls[0]) || a?.profile_photo || '');
   return {
     title,
     description: desc,
@@ -70,16 +70,16 @@ export default async function PostPage({ params }: Props) {
             <div className="gallery">
               {photos.map((src, i) => (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img key={i} src={src} alt={`photo ${i + 1}`} />
+                <img key={i} src={imgProxy(src)} alt={`photo ${i + 1}`} />
               ))}
             </div>
           ) : p.video_url ? (
-            <video controls playsInline poster={p.thumbnail_url || undefined} preload="metadata">
+            <video controls playsInline poster={imgProxy(p.thumbnail_url) || undefined} preload="metadata">
               <source src={p.video_url} />
             </video>
           ) : p.thumbnail_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={p.thumbnail_url} alt="post" />
+            <img src={imgProxy(p.thumbnail_url)} alt="post" />
           ) : null}
         </div>
 

@@ -1,5 +1,7 @@
 // Lecture publique de Supabase (clé publishable = publique, jamais la secrète).
 // RLS + le verrouillage des colonnes credentials protègent le reste.
+import { SITE_URL } from './config';
+
 const SUPABASE_URL = 'https://focztgxwxdknnoudwvvd.supabase.co';
 const PUBLISHABLE_KEY = 'sb_publishable_i9ALTuVqGZc8qAFHqFILvA_oPGHEnec';
 
@@ -91,4 +93,16 @@ export async function getPost(id: string): Promise<Post | null> {
 
 export function fullName(a: Athlete): string {
   return [a.first_name, a.last_name].filter(Boolean).join(' ') || a.username || 'Athlete';
+}
+
+// Média du bucket PRIVÉ VIDEOS → passe par le proxy signé /img (sinon 403). URL externe = telle quelle.
+export function imgProxy(url?: string | null): string {
+  if (!url) return '';
+  return url.includes('/VIDEOS/') ? `/img?u=${encodeURIComponent(url)}` : url;
+}
+// Version ABSOLUE pour OpenGraph (les crawlers sociaux exigent une URL absolue).
+export function imgAbs(url?: string | null): string {
+  const p = imgProxy(url);
+  if (!p) return '';
+  return p.startsWith('http') ? p : `${SITE_URL}${p}`;
 }
