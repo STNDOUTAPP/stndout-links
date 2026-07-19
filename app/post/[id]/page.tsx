@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getPost, getPublicAthlete, fullName, imgProxy, imgAbs } from '../../../lib/db';
+import { getPost, getPublicAthlete, fullName, imgProxy, imgAbs, vidProxy } from '../../../lib/db';
 import AppCTA from '../../components/AppCTA';
 
 type Props = { params: { id: string } };
@@ -75,7 +75,7 @@ export default async function PostPage({ params }: Props) {
             </div>
           ) : p.video_url ? (
             <video controls playsInline poster={imgProxy(p.thumbnail_url) || undefined} preload="metadata">
-              <source src={p.video_url} />
+              <source src={vidProxy(p.video_url)} />
             </video>
           ) : p.thumbnail_url ? (
             // eslint-disable-next-line @next/next/no-img-element

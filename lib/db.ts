@@ -100,6 +100,12 @@ export function imgProxy(url?: string | null): string {
   if (!url) return '';
   return url.includes('/VIDEOS/') ? `/img?u=${encodeURIComponent(url)}` : url;
 }
+// Vidéo du bucket PRIVÉ VIDEOS → proxy /vid qui REDIRIGE vers l'URL signée (streaming/Range natif).
+// Ne PAS utiliser /img pour la vidéo (il bufferise tout). URL externe (CF, etc.) = telle quelle.
+export function vidProxy(url?: string | null): string {
+  if (!url) return '';
+  return url.includes('/VIDEOS/') ? `/vid?u=${encodeURIComponent(url)}` : url;
+}
 // Version ABSOLUE pour OpenGraph (les crawlers sociaux exigent une URL absolue).
 export function imgAbs(url?: string | null): string {
   const p = imgProxy(url);
