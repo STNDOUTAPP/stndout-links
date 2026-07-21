@@ -49,46 +49,31 @@ export type Post = {
   expires_at: string | null;
 };
 
-async function rest<T>(path: string): Promise<T[]> {
+// public-card = porte service_role. Depuis la migration 0099, la RLS bloque la lecture ANON de la
+// table `athletes` (anti-moisson des mineurs) → le web anon ne peut plus lire en direct. public-card
+// (verify_jwt=false) renvoie SEULEMENT le sous-ensemble public et gate public/actif CÔTÉ SERVEUR.
+async function publicCard<T>(kind: 'athlete' | 'post', id: string, key: 'athlete' | 'post'): Promise<T | null> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/public-card?kind=${kind}&id=${encodeURIComponent(id)}`, {
       headers: HEADERS,
       next: { revalidate: 60 },
     });
-    if (!res.ok) return [];
-    return (await res.json()) as T[];
+    if (!res.ok) return null;
+    const j = await res.json();
+    return (j?.[key] ?? null) as T | null;
   } catch {
-    return [];
+    return null;
   }
 }
 
-// Renvoie l'athlète SEULEMENT s'il est public et non supprimé.
+// Athlète PUBLIC seulement (public-card gate public + non supprimé côté serveur).
 export async function getPublicAthlete(id: string): Promise<Athlete | null> {
-  const cols =
-    'id,first_name,last_name,username,sport,position,level,country,profile_photo,bio,is_private,deletion_scheduled_at,grad_year,featured_titles';
-  const rows = await rest<Athlete>(`athletes?id=eq.${encodeURIComponent(id)}&select=${cols}`);
-  const a = rows[0];
-  if (!a) return null;
-  if (a.is_private) return null; // jamais exposer un profil privé
-  if (a.deletion_scheduled_at) return null; // ni un compte en suppression
-  return a;
+  return publicCard<Athlete>('athlete', id, 'athlete');
 }
 
+// Post PUBLIC seulement (public-card gate déjà : actif, non expiré, ET auteur public+non supprimé).
 export async function getPost(id: string): Promise<Post | null> {
-  const cols =
-    'id,athlete_id,video_url,thumbnail_url,photo_urls,caption,media_type,sport,level,status,expires_at';
-  const rows = await rest<Post>(`posts?id=eq.${encodeURIComponent(id)}&select=${cols}`);
-  const p = rows[0];
-  if (!p) return null;
-  if (p.status && p.status !== 'active') return null;
-  if (p.expires_at && new Date(p.expires_at) < new Date()) return null; // post 24h expiré
-  // Ne JAMAIS exposer sur le web un post dont l'athlète n'est pas PUBLIC.
-  // Le tier 'recruiters' est lisible via l'API (privacy douce, gating in-app) mais
-  // ne doit pas apparaître sur une page web publique → on exige un athlète public.
-  if (!p.athlete_id) return null;
-  const owner = await getPublicAthlete(p.athlete_id);
-  if (!owner) return null;
-  return p;
+  return publicCard<Post>('post', id, 'post');
 }
 
 export function fullName(a: Athlete): string {
